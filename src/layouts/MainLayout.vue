@@ -5,13 +5,19 @@
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          Quasar App
+          ShortCutURL by Javs98
         </q-toolbar-title>
 
-        <q-btn color="amber" to="/" v-show="userStore.token">Inicio</q-btn>
-        <q-btn color="green" @click="login" v-show="!userStore.token">Log In</q-btn>
-        <q-btn color="purple" to="/protected" v-show="userStore.token">Protected</q-btn>
-        <q-btn color="deep-orange" @click="logout" v-show="userStore.token">Log Out</q-btn>
+        <q-btn-group push v-show="!userStore.token">
+          <q-btn push color="positive" icon="login" @click="login"><q-tooltip>Log In</q-tooltip></q-btn>
+          <q-btn push color="secondary" icon="person_add" @click="register"><q-tooltip>Register</q-tooltip></q-btn>
+        </q-btn-group>
+
+        <div class="q-pa-md q-gutter-sm" v-show="userStore.token">
+          <q-btn push color="amber" icon="home" to="/">Inicio</q-btn>
+          <q-btn push color="purple" to="/protected">Protected</q-btn>
+          <q-btn push color="deep-orange" icon-right="logout" @click="logout">Log Out</q-btn>
+        </div>
 
       </q-toolbar>
     </q-header>
@@ -35,15 +41,17 @@
 <script setup>
 import { ref } from 'vue'
 import EssentialLink from 'components/EssentialLink.vue'
-import { userUserStore } from '../stores/user-store';
+import { useUserStore } from '../stores/user-store';
 import { useRouter } from 'vue-router';
-const userStore = userUserStore();
+const userStore = useUserStore();
 const leftDrawerOpen = ref(false);
 const router = useRouter();
 
 const login = async () => {
-  await userStore.access();
-  router.push('/');
+  router.push('/login');
+}
+const register = async () => {
+  router.push('/register');
 }
 
 const logout = async () => {

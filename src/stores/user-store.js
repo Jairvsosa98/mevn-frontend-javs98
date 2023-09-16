@@ -2,15 +2,40 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { api } from 'src/boot/axios';
 
-export const userUserStore = defineStore('user', () => {
+export const useUserStore = defineStore('user', () => {
     const token = ref(null);
     const expiresIn = ref(null);
 
-    const access = async () => {
+    const register = async (name, surname, email, password, repassword) => {
+        try {
+            const res = await api.post('/auth/register', {
+                name,
+                surname,
+                email,
+                password,
+                repassword
+            });
+            token.value = res.data.token;
+            expiresIn.value = res.data.expiresIn;
+            sessionStorage.setItem("user", true);
+            setTime();
+
+        } catch (error) {
+            if (error.response) {
+                throw (error.response.data)
+            } else if (error.request) {
+                console.log(error.request);
+            } else {
+                console.log("Error", error.message);
+            }
+        }
+    }
+
+    const access = async (email, password) => {
         try {
             const res = await api.post('/auth/login', {
-                email: "jair@gmail.com",
-                password: "123456"
+                email,
+                password
             });
 
             token.value = res.data.token;
@@ -18,7 +43,13 @@ export const userUserStore = defineStore('user', () => {
             sessionStorage.setItem('user', true);
             setTime();
         } catch (error) {
-            console.log(error);
+            if (error.response) {
+                throw (error.response.data)
+            } else if (error.request) {
+                console.log(error.request);
+            } else {
+                console.log("Error", error.message);
+            }
         }
     }
 
@@ -56,14 +87,15 @@ export const userUserStore = defineStore('user', () => {
     }
 
     const resetStore = () => {
-        token.value = null,
-            expiresIn.value = null
+        token.value = null;
+        expiresIn.value = null;
     }
 
     return {
         token,
         expiresIn,
         access,
+        register,
         setTime,
         refreshToken,
         logout,

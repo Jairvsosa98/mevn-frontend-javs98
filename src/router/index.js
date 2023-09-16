@@ -1,7 +1,7 @@
 import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
-import { userUserStore } from '../stores/user-store'
+import { useUserStore } from '../stores/user-store'
 
 
 export default route(function () {
@@ -18,7 +18,7 @@ export default route(function () {
 
   Router.beforeEach(async (to, from, next) => {
     const requireAuth = to.meta.auth;
-    const userStore = userUserStore();
+    const userStore = useUserStore();
 
     //si existe el token en memoria
     if (userStore.token) return next();
